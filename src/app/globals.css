@@ -1,26 +1,46 @@
 @import "tailwindcss";
-
+html {
+    font-family: "Poppins", sans-serif;
+}
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --background: #ffffff;
+    --foreground: #171717;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+    }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+
+    h2 {
+        @apply font-semibold;
+    }
+    .customization-container {
+        @apply flex flex-col gap-2;
+    }
+
+    .input-box {
+        @apply flex flex-col gap-0.5 w-full;
+    }
+    label {
+        @apply font-normal text-sm;
+    }
+
+    .input-color {
+        @apply h-8 w-full cursor-pointer border-none bg-transparent;
+    }
+    .input-file {
+        @apply opacity-0 absolute z-2 h-14 cursor-pointer;
+    }
 }

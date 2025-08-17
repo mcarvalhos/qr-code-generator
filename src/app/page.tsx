@@ -1,103 +1,162 @@
-import Image from "next/image";
+"use client";
+import { QRCodeCanvas } from "qrcode.react";
+import { FaUpload } from "react-icons/fa";
+import { useState, useRef } from "react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    const [linkValue, setLinkValue] = useState<string>("");
+    const [bgColor, setBgColor] = useState<string>("#FFFFFF");
+    const [fgColor, setFgColor] = useState<string>("#000000");
+    const [logoUrl, setLogoUrl] = useState<string>("logo-react.png");
+    const [logoSize, setLogoSize] = useState<number>(32);
+    const qrCodeRef = useRef<HTMLDivElement>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setLogoUrl(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleQrCodeDownload = () => {
+        const canvas = qrCodeRef.current?.querySelector("canvas");
+        if (canvas) {
+            const link = document.createElement("a");
+            link.href = canvas.toDataURL("image/png");
+            link.download = "qr-code.png";
+            link.click();
+        }
+    };
+
+    return (
+        <main className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-[#DBEAFE] to-[#ADD0FF] gap-8 px-4 md:px-0">
+            <section className="title-container relative flex flex-col items-center ">
+                <h1 className="page-title font-semibold text-center text-[32px] leading-tight">
+                    Gere e customize QR Codes
+                    <span className="text-[#4F46E5]"> dinâmicos</span>
+                </h1>
+                <img
+                    src="/arrow.svg"
+                    alt="detail"
+                    className="absolute -right-[90px] h-[130px] top-[10px] -rotate-[10deg] z-20 hidden md:block"
+                />
+            </section>
+            <section
+                className="qr-code-container flex flex-col md:flex-row gap-3 w-full md:w-[700px] p-3 bg-white/20 backdrop-blur-lg rounded-xl border border-white/30 shadow-lg">
+                <div className="qr-code flex flex-col gap-[10px] w-full md:w-1/2 p-4 bg-white/30 rounded-lg">
+                    <div className=" link-input flex flex-col gap-0.5">
+                        <label htmlFor="link" className="font-semibold">
+                            Digite seu link
+                        </label>
+                        <input
+                            type="text"
+                            id="link"
+                            placeholder=" https://exemplo.com"
+                            className="p-2.5 rounded-lg border border-[#E2E8F0] focus:outline focus:outline-[#4F46E5]"
+                            value={linkValue}
+                            onChange={(e) => setLinkValue(e.target.value)}
+                        />
+                    </div>
+                    <div className="qr-code-preview flex flex-col items-center gap-3">
+                        <p>QR Code Preview</p>
+                        <div ref={qrCodeRef} className="qr-code-canvas">
+                        <QRCodeCanvas
+                            value={linkValue}
+                            title={linkValue}
+                            size={200}
+                            bgColor={bgColor}
+                            fgColor={fgColor}
+                            imageSettings={{
+                                src:  logoUrl,
+                                x: undefined,
+                                y: undefined,
+                                height: logoSize,
+                                width: logoSize,
+                                opacity: 1,
+                                excavate: true,
+                                crossOrigin: "anonymous"
+                            }}
+                        />
+                        </div>
+                    </div>
+                </div>
+                <div className="qr-code-customization flex flex-col justify-between gap-3 w-full md:w-1/2 p-4 bg-white/30 rounded-lg">
+                    <div className="customization-container">
+                        <h2 className="">Personalize seu QR Code</h2>
+                        {/* <p>Escolha as cores, adicione um logo e muito mais!</p> */}
+                        <div className="input-container colors flex flex-row gap-8">
+                            <div className="input-box">
+                                <label htmlFor="bgColor">Cor de fundo</label>
+                                <input
+                                    type="color"
+                                    className="input-color"
+                                    id="bgColor"
+                                    value={bgColor}
+                                    onChange={(e) => setBgColor(e.target.value)}
+                                />
+                            </div>
+                            <div className="input-box">
+                                <label htmlFor="fgColor">Cor do QR Code</label>
+                                <input
+                                    type="color"
+                                    className="input-color"
+                                    id="fgColor"
+                                    value={fgColor}
+                                    onChange={(e) => setFgColor(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="customization-container">
+                        <h2>Logo</h2>
+                        <div className="input-container flex flex-col gap-3.5">
+                            <div className="input-box">
+                                <label htmlFor="logo">Insira seu logo</label>
+                                <input
+                                    type="file"
+                                    className="input-file"
+                                    id="logo"
+                                    accept="image/*"
+                                    onChange={handleLogoChange}
+                                />
+                                <button className="input-file-button relative z-1 bg-[#4F46E5] rounded-lg border-none px-3 py-2 text-white flex gap-1 items-center justify-center cursor-pointer text-sm w-full">
+                                    <FaUpload />
+                                    Escolher arquivo
+                                </button>
+                            </div>
+                            <div className="input-box">
+                                <label htmlFor="logoSize">
+                                    Tamanho do logo
+                                </label>
+                                <select
+                                    className=" px-3 py-2 appearance-none bg-[url('/chevron-down.svg')] bg-no-repeat bg-[right_12px_center] bg-[length:18px] bg-white/70 border border-purple-200 rounded-lg focus:outline-purple-500"
+                                    name="logoSize"
+                                    id="logoSize"
+                                    value={logoSize}
+                                    onChange={(e) => setLogoSize(Number(e.target.value))}>
+
+                                    <option value="24">24px</option>
+                                    <option value="32">32px</option>
+                                    <option value="48">48px</option>
+                                    <option value="64">64px</option>
+                                    <option value="80">80px</option>
+                                    <option value="96">96px</option>
+                                    <option value="112">112px</option>
+                                    <option value="128">128px</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button className="download-button bg-[#4F46E5] text-white px-6 py-3 rounded-lg font-semibold border-none cursor-pointer hover:bg-[#4338CA] transition-colors duration-200"
+                    onClick={handleQrCodeDownload}>
+                        Baixar QR Code
+                    </button>
+                </div>
+            </section>
+        </main>
+    );
 }
